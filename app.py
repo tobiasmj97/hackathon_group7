@@ -58,7 +58,7 @@ st.markdown("""
 #--------- Expander ---------
 
 # Guidance Expander
-with st.expander("**Assignment Guide** 📊 "):
+with st.expander("**Assignment Guide** 🗺️ "):
     st.markdown("""
     1. **Explore the dataset** - What questions could be interesting to explore? Consider using pygwalker if you're interested.
 
@@ -76,19 +76,14 @@ with st.expander("**Assignment Guide** 📊 "):
 7. **Deployment Options** - Deploy on Streamlit cloud. """)
                              
 # Data access Expander
-with st.expander("**EDA Questions** 📚"):
+with st.expander("**EDA Questions** 🙋❓"):
     st.markdown("""
 
         1. What's the distribution of jobs in the dataset?
-
         2. How does the mean salary change depending on the experience level?
-
         3. How does the salary change depending on the country and region?
-
         4. Which country has the highest mean salary in Europe?
-
         5. What are the top ten countries according to DS mean salary?
-
         6. In which countries are there the most DS job opportunities?
         """)
                              
@@ -101,7 +96,7 @@ with st.expander("**How to Use the Dashboard** 📚"):
     """)
 
 # Tutorial Expander
-with st.expander("**Data explanation** 📚"):
+with st.expander("**Data explanation** 📈"):
     st.markdown("""
     The download basically contains a single table with all salary information structured as follows:
 
@@ -142,6 +137,9 @@ with st.expander("**Data explanation** 📚"):
             - L: more than 250 employees (large)
 
     """)
+
+# Show filtered data in a table
+
 
 
 #------------------ Sidebar setup ------------------
@@ -414,32 +412,30 @@ st.write(filtered_df)
 # EDA Answers
 with st.expander("**EDA Answer** 📚"):
     st.markdown("""
-        1. What's the distribution of jobs in the dataset?
-                
-                The distribution of jobs in the dataset is:
-                
-                26.4 percent are other jobs
-                24.5 percent are Data Engineers
-                21.3 percent are Data Scientists
-                15.3 percent are Data Analysts
-                9.6 percent are Machine Learning Engineers
-                2.9 percent are Analytics Engineers
+        1. **What's the distribution of jobs in the dataset?** \n
+            The distribution of jobs in the dataset is:
+            - 26.4 percent are other jobs
+            - 24.5 percent are Data Engineers
+            - 21.3 percent are Data Scientists
+            - 15.3 percent are Data Analysts
+            - 9.6 percent are Machine Learning Engineers
+            - 2.9 percent are Analytics Engineers
 
-        2. How does the mean salary change depending on the experience level?
-                The job salary distribution are changing as we would excpect. The lowest paying are the entry-level jobs, thereafter the mid-level jobs, followed by the senior-level and the highest paying jobs are the executive-level jobs
+        2. **How does the mean salary change depending on the experience level?** \n
+            The job salary distribution are changing as we would excpect. The lowest paying are the entry-level jobs, thereafter the mid-level jobs, followed by the senior-level and the highest paying jobs are the executive-level jobs
 
-        3. How does the salary change depending on the region?
-                The highest paying region is the Americas, where the lowest paying is Africa
+        3. **How does the salary change depending on the region?** \n
+            The highest paying region is the Americas, where the lowest paying is Africa
 
-        4. Which country has the highest mean salary in Europe?
-                Bosnia and Herzegovina has highest mean salary in Europe. But that's because there is only one job from Bosnia in the dataset. So Ireland would be more realistic option
+        4. **Which country has the highest mean salary in Europe?** \n
+            Bosnia and Herzegovina has highest mean salary in Europe. But that's because there is only one job from Bosnia in the dataset. So Ireland would be more realistic option
 
-        5. What are the top ten countries according to DS mean salary?
-                The highest paying country is Qatar where the salary is 300.000 USD annualy,
-                Then Israel, Puerto Rico, United States, Canada, Saudi Arabia, Australia, New Zealand, Bosnia and Herzegovina
-                The 10th highest is Ireland with about 120.000 USD
+        5. **What are the top ten countries according to DS mean salary?** \n
+            The highest paying country is Qatar where the salary is 300.000 USD annualy,
+            Then Israel, Puerto Rico, United States, Canada, Saudi Arabia, Australia, New Zealand, Bosnia and Herzegovina
+            The 10th highest is Ireland with about 120.000 USD
 
-        6. In which countries are there the most DS job opportunities?
-                The United States has the most job oppertunities, and is almost 6000, where the second most is United Kingdom with below 500. But since the data is mainly from the US, the numbers are not very representative.
+        6. **In which countries are there the most DS job opportunities?** \n
+            The United States has the most job oppertunities, and is almost 6000, where the second most is United Kingdom with below 500. But since the data is mainly from the US, the numbers are not very representative.
                 
     """)
