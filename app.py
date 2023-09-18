@@ -17,17 +17,37 @@ def load_data():
         0: 'Onsite',
         50: 'Hybrid',
     })
+    df['experience_level_des'] = df['experience_level'].map({
+        'EN':'Entry-level',
+        'MI':'Mid-level',
+        'SE':'Senior-level',
+        'EX':'Executive-level'
+    })
+
+    file_path2 = 'continents2.csv'
+    
+    # Load the CSV file into a pandas dataframe
+    continents = pd.read_csv(file_path2)
+
+    # Dropping all columns in the continents dataframe
+    # except 'name', 'alpha-2' and 'region'
+    continents = continents[['name', 'alpha-2', 'region']]
+    
+    # Renaming the column 'alpha-2' to 'company_location', so that we can merge the two dataframes
+    continents = continents.rename(columns={'alpha-2':'company_location', 'name':'country'})
+    
+    # Merging the two dataframes
+    df = df.merge(continents, how='left')
 
     return df
 
 # Load the data using the defined function
 df = load_data()
 
-
 #------------------ Streamlit UI and Introduction ------------------
 
 # Title and Sidebar Title
-st.title("EDA Streamlit App with the Salaries dataset 2💵👨‍💻👩‍💻")
+st.title("EDA Streamlit App with the Salaries dataset💵👨‍💻👩‍💻")
 st.sidebar.title("Filters 📊")
 
 # Introduction
@@ -38,15 +58,38 @@ st.markdown("""
 #--------- Expander ---------
 
 # Guidance Expander
-with st.expander("**Guidance from Teams** 📊 "):
+with st.expander("**Assignment Guide** 📊 "):
     st.markdown("""
-        After the kick-off on the 12th, you have the exciting task of creating and hosting an engaging and user-friendly dashboard using Streamlit and the datasets we have provided.
-        """)
+    1. **Explore the dataset** - What questions could be interesting to explore? Consider using pygwalker if you're interested.
+
+2. **EDA Notebook** - Select some questions from your exploration. - Build an EDA (Exploratory Data Analysis) notebook including visualizations.
+
+3. **Remote Collaboration** - If you're working remotely, consider using Zoom with the AAU license.
+	
+4. **Learn Github with VSCode** - Get familiar with VSCode Github collaboration. Read the guide on VSCode's website. 
+        Remember, using Github is frequently mentioned in job postings! Watch the official intro by VSCode.
+
+5. **Dashboard Elements** - Select the elements that you want to be part of your dashboard.
+		Think about filters and interactive elements. What should users be able to select or interact with?
+6. **Build your App** - Use other apps as inspiration or reference. 
+                
+7. **Deployment Options** - Deploy on Streamlit cloud. """)
                              
 # Data access Expander
-with st.expander("**Data access** 📚"):
+with st.expander("**EDA Questions** 📚"):
     st.markdown("""
-        The datasets will be released in good time in the general channel in Teams as a zip file. You just have to choose one of them, and perform EDA on it.
+
+        1. What's the distribution of jobs in the dataset?
+
+        2. How does the mean salary change depending on the experience level?
+
+        3. How does the salary change depending on the country and region?
+
+        4. Which country has the highest mean salary in Europe?
+
+        5. What are the top ten countries according to DS mean salary?
+
+        6. In which countries are there the most DS job opportunities?
         """)
                              
 # Tutorial Expander
@@ -102,47 +145,85 @@ with st.expander("**Data explanation** 📚"):
 
 
 #------------------ Sidebar setup ------------------
+# Filter by region
+region_filter = ['Select All'] + list(df["region"].unique())
+region_filter = st.sidebar.multiselect(
+    "Select Region",
+    region_filter,
+    default=['Select All']
+)
+
+if 'Select All' in region_filter:
+    region_filter = list(df["region"].unique())
+
+if not region_filter:
+    st.warning("Please select a region from the sidebar ⚠️")
+    st.stop()
 
 # Filter by experience level (multiselect)
 experience_level_filter = st.sidebar.multiselect(
     "Select Experience Level",
-    df["experience_level"].unique(),
-    default=df["experience_level"].unique(),
+    df["experience_level_des"].unique(),
+    default=df["experience_level_des"].unique(),
     help="The experience level in the job during the year with the following possible values"
-    
+
 )
+if not experience_level_filter:
+    st.warning("Please select an experience level from the sidebar ⚠️")
+    st.stop()
 
 # Filter by job type description
 job_type_filter = st.sidebar.multiselect(
     "Select Job type",
     df["job_type_des"].unique(),
-    default=['Onsite'],
+    default=df["job_type_des"].unique(),
     help="The overall amount of work done remotely, possible values are as follows"
 )
+if not job_type_filter:
+    st.warning("Please select a job type from the sidebar ⚠️")
+    st.stop()
 
 # Filter by job title
+job_title_options = ['Select All'] + list(df["job_title"].unique())
 job_title_filter = st.sidebar.multiselect(
     "Select Job Title",
-    df["job_title"].unique(),
-    default=['Data Analyst']
+    job_title_options,
+    default=['Select All']
 )
+
+if 'Select All' in job_title_filter:
+    job_title_filter = list(df["job_title"].unique())
+
+if not job_title_filter:
+    st.warning("Please select a job title from the sidebar ⚠️")
+    st.stop()
+
+# Filter by Employment type
+employment_type_filter = st.sidebar.multiselect(
+    "Select Job type",
+    df["employment_type"].unique(),
+    default=df["employment_type"].unique(),
+    help="Choose the type of employment"
+)
+if not employment_type_filter:
+    st.warning("Please select an employment type from the sidebar ⚠️")
+    st.stop()
 
 #---------- Apply filters ----------
 
 # Apply filters to the DataFrame
-filtered_df = df[df["experience_level"].isin(experience_level_filter) & (df["job_type_des"].isin(job_type_filter)) & (df["job_title"].isin(job_title_filter)) ]
+filtered_df = df[df["experience_level_des"].isin(experience_level_filter) & (df["job_type_des"].isin(job_type_filter)) & (df["job_title"].isin(job_title_filter)) & (df["region"].isin(region_filter)) & (df["employment_type"].isin(employment_type_filter))]
 
 #------------------ Dashboard ------------------
 
-# Show filtered data in a table
-st.write("Filtered Data:")
-st.write(filtered_df)
 
 # Dropdown to select the type of visualization
 visualization_option = st.selectbox(
     "Select Visualization 🎨", 
     ["Salary Distribution", 
-     "Top 10 countries"
+     "Top and bottom 10 countries",
+     "Continents",
+     "Job distribution"
      ]
 )
 
@@ -163,6 +244,7 @@ if visualization_option == "Salary Distribution":
         x="experience_level",
         y="salary_in_usd",
         width=0.7,
+        order = ['EN','MI','SE','EX']
     )
     plt.title("Salary Distribution by Experience Level")
     plt.xlabel("Experience Level")
@@ -170,38 +252,194 @@ if visualization_option == "Salary Distribution":
     st.pyplot()
 
 
-elif visualization_option == "Top 10 countries":
 
-    st.header("Top 10 countries")
+elif visualization_option == "Top and bottom 10 countries":
 
-    st.markdown(""" 
-        This two diagrams shows the top 10 countries according to DS mean salaries and top 10 countries having most DS job opportunities.
+ 
+
+    st.header("Top and bottom 10 countries")
+
+ 
+
+    st.markdown("""
+
+        This diagrams shows the top 10 and bottom 10 countries according to DS mean salaries and top 10 countries having most DS job opportunities.
+
         """)
 
+ 
+
     # Top 10 company-locations according to mean salary
-    top_cmp_locations = filtered_df.groupby('company_location')['salary_in_usd'].mean().sort_values(ascending=False)[:10]
+
+    top_cmp_locations = filtered_df.groupby('country')['salary_in_usd'].mean().sort_values(ascending=False)[:10]
+
+ 
 
     plt.figure(figsize=(8, 6))
+
     sns.barplot(
+
         data=filtered_df,
-        y=top_cmp_locations.index, 
+
+        y=top_cmp_locations.index,
+
         x=top_cmp_locations
+
     )
+
     plt.title("Top 10 countries according to DS mean salaries", fontdict={'fontsize': 16})
-    plt.xlabel("Mean Salary")
+
+    plt.xlabel("Mean Salary in USD")
+
     plt.ylabel("Countries")
+
     st.pyplot()
+
+ 
+
+ 
+
+ 
+
+ 
+
+    # Bottom 10 company-locations according to mean salary
+
+    top_cmp_locations = filtered_df.groupby('country')['salary_in_usd'].mean().sort_values(ascending=True)[:10]
+
+ 
+
+    plt.figure(figsize=(8, 6))
+
+    sns.barplot(
+
+        data=filtered_df,
+
+        y=top_cmp_locations.index,
+
+        x=top_cmp_locations
+
+    )
+
+    plt.title("Bottom 10 countries according to DS mean salaries", fontdict={'fontsize': 16})
+
+    plt.xlabel("Mean Salary in USD")
+
+    plt.ylabel("Countries")
+
+    st.pyplot()
+
+ 
 
     # Top 10 company-locations having most job opportunities
-    top_cl = filtered_df['company_location'].value_counts()[:10]
+
+    top_cl = filtered_df['country'].value_counts()[:10]
+
+ 
 
     plt.figure(figsize=(8, 6))
+
+    sns.barplot(
+
+        data=filtered_df,
+
+        x=top_cl,
+
+        y=top_cl.index
+
+    )
+
+    plt.title("Top 10 countries having most DS job opportunities", fontdict={'fontsize': 16})
+
+    plt.xlabel("Number of Job Opportunities")
+
+    plt.ylabel("Countries")
+
+    st.pyplot()
+
+elif visualization_option == "Continents":
+
+    st.header("Continents")
+
+    st.markdown(""" 
+        This diagrams shows the continents according to DS mean salaries.
+        """)
+
+   # Mean salary distributed by continent
+    continents_mean_salaries = filtered_df.groupby('region')['salary_in_usd'].mean().sort_values(ascending=False)
+    print(continents_mean_salaries)
+
+    plt.figure(figsize=(8, 6))
+    
     sns.barplot(
         data=filtered_df,
-        x=top_cl, 
-        y=top_cl.index
+        y=continents_mean_salaries.index, 
+        x=continents_mean_salaries
     )
-    plt.title("Top 10 countries having most DS job opportunities", fontdict={'fontsize': 16})
-    plt.xlabel("Number of Job Opportunities")
-    plt.ylabel("Countries")
+    plt.title("Mean salary distributed by continents", fontdict={'fontsize': 16})
+    plt.xlabel("Mean Salary in USD")
+    plt.ylabel("Continents")
     st.pyplot()
+
+elif visualization_option == "Job distribution":
+
+    st.markdown("""
+
+                This pie chart shows distribution of jobs in the dataset.""")
+
+    job_counts = filtered_df['job_title'].value_counts()
+
+    top_5 = job_counts.nlargest(5)
+
+    others = pd.Series([job_counts.sum() - top_5.sum()], index=['Other'])
+
+    final_counts = pd.concat([top_5, others])
+
+ 
+
+    plt.figure(figsize=(10, 6))
+
+    plt.pie(final_counts, labels=final_counts.index, autopct='%1.1f%%', startangle=90)
+
+    plt.title('Distribution of Job Titles (Top 5 + Other)')
+
+    plt.axis('equal')
+
+    st.pyplot()
+
+# Show filtered data in a table
+st.write("Filtered Data:")
+st.write(filtered_df)
+
+# EDA Answers
+with st.expander("**EDA Answer** 📚"):
+    st.markdown("""
+        1. What's the distribution of jobs in the dataset?
+                
+                The distribution of jobs in the dataset is:
+                
+                26.4 percent are other jobs
+                24.5 percent are Data Engineers
+                21.3 percent are Data Scientists
+                15.3 percent are Data Analysts
+                9.6 percent are Machine Learning Engineers
+                2.9 percent are Analytics Engineers
+
+        2. How does the mean salary change depending on the experience level?
+                The job salary distribution are changing as we would excpect. The lowest paying are the entry-level jobs, thereafter the mid-level jobs, followed by the senior-level and the highest paying jobs are the executive-level jobs
+
+        3. How does the salary change depending on the region?
+                The highest paying region is the Americas, where the lowest paying is Africa
+
+        4. Which country has the highest mean salary in Europe?
+                Bosnia and Herzegovina has highest mean salary in Europe. But that's because there is only one job from Bosnia in the dataset. So Ireland would be more realistic option
+
+        5. What are the top ten countries according to DS mean salary?
+                The highest paying country is Qatar where the salary is 300.000 USD annualy,
+                Then Israel, Puerto Rico, United States, Canada, Saudi Arabia, Australia, New Zealand, Bosnia and Herzegovina
+                The 10th highest is Ireland with about 120.000 USD
+
+        6. In which countries are there the most DS job opportunities?
+                The United States has the most job oppertunities, and is almost 6000, where the second most is United Kingdom with below 500. But since the data is mainly from the US, the numbers are not very representative.
+                
+    """)
