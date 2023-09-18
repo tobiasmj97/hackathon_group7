@@ -3,6 +3,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+st.set_page_config(
+        page_title="Hackathon Group 7",
+        page_icon="chart_with_upwards_trend",
+        layout="wide",
+)
+
 # Function to load the dataset
 @st.cache_data  # Cache the function to enhance performance
 def load_data():
@@ -49,6 +55,8 @@ df = load_data()
 # Title and Sidebar Title
 st.title("EDA Streamlit App with the Salaries dataset💵👨‍💻👩‍💻")
 st.sidebar.title("Filters 📊")
+
+
 
 # Introduction
 st.markdown("""
