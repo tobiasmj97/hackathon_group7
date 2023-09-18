@@ -27,7 +27,7 @@ df = load_data()
 #------------------ Streamlit UI and Introduction ------------------
 
 # Title and Sidebar Title
-st.title("EDA Streamlit App with the Salaries dataset💵👨‍💻👩‍💻")
+st.title("EDA Streamlit App with the Salaries dataset 2💵👨‍💻👩‍💻")
 st.sidebar.title("Filters 📊")
 
 # Introduction
